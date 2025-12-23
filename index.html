@@ -58,8 +58,10 @@ svg{
   fill:var(--bead);
   filter: drop-shadow(0 1px 4px rgba(0,0,0,.35));
   transition: fill .3s ease, filter .3s ease;
+  shape-rendering: geometricPrecision; /* improve cross-browser circle rendering */
+  vector-effect: non-scaling-stroke;
 }
-.bead.small{ fill:var(--bead-soft); r:16; }
+.bead.small{ fill:var(--bead-soft); }
 .bead.super{
   fill:var(--bead-super);
   filter: drop-shadow(0 0 12px rgba(253,230,138,.7));
@@ -175,11 +177,42 @@ svg{
 .zone.right{ right:0; }
 
 .bead.active {
-  fill: var(--bead); /* normal color stays the same */
-  stroke: #a6ff00;   /* bright lime green ring */
-  stroke-width: 4px;
-  r: 16;             /* slightly bigger radius if needed */
-  animation: pulse 1s infinite;
+  /* keep bead visible but use subtle warm glow; flame indicates active bead */
+  fill: var(--bead);
+  transform-origin: center center;
+  transform-box: fill-box;
+  transform: scale(1.06);
+  filter: drop-shadow(0 6px 12px rgba(255,180,64,0.18));
+  transition: transform .22s ease, filter .22s ease;
+}
+
+.flame{ pointer-events:none; }
+.flame-outer, .flame-inner{ transform-origin: center bottom; transform-box: fill-box; }
+.flame-outer{ fill:#ffd964; opacity:0.98; filter: blur(.6px); animation: flame-drift-outer 900ms infinite ease-in-out; }
+.flame-inner{ fill:#fff1a8; opacity:0.98; animation: flame-drift-inner 650ms infinite ease-in-out; }
+
+.debug-dot{ pointer-events:none; stroke:#fff; stroke-width:1px; }
+
+@keyframes flame-drift-outer{
+  0%{ transform: translateY(0) scaleY(1); }
+ 50%{ transform: translateY(-2px) scaleY(1.08) rotate(-1deg); }
+ 100%{ transform: translateY(0) scaleY(1); }
+}
+@keyframes flame-drift-inner{
+  0%{ transform: translateY(0) scaleY(1); opacity:0.95 }
+ 50%{ transform: translateY(-4px) scaleY(1.18); opacity:1 }
+ 100%{ transform: translateY(0) scaleY(1); opacity:0.95 }
+}
+
+/* Full-bead fire visuals */
+.bead.fire{ fill: url(#bead-fire-grad); filter: url(#fire-blur); }
+.bead.fire.super{ filter: drop-shadow(0 0 18px rgba(255,150,40,0.55)); }
+.ember{ fill: rgba(255,200,120,0.95); opacity:0.95; transform-box: fill-box; transform-origin: center center; animation: ember-rise 1100ms forwards ease-out; }
+
+@keyframes ember-rise{
+  0%{ transform: translateY(0) scale(0.6); opacity:1 }
+  60%{ transform: translateY(-18px) scale(1); opacity:0.9 }
+ 100%{ transform: translateY(-32px) scale(0.8); opacity:0 }
 }
 
 
@@ -288,6 +321,27 @@ svg{
         <!-- center roughly where the dove is drawn; radius slightly smaller than image half-size -->
         <circle cx="300" cy="270" r="130" />
       </clipPath>
+      <!-- bead fire gradient + subtle turbulence filter for flicker -->
+      <radialGradient id="bead-fire-grad" cx="50%" cy="45%" r="60%">
+        <stop offset="0%" stop-color="#fff7b0" stop-opacity="1" />
+        <stop offset="30%" stop-color="#ffd66a" stop-opacity="0.95" />
+        <stop offset="60%" stop-color="#ff9b2e" stop-opacity="0.85" />
+        <stop offset="100%" stop-color="#7c2300" stop-opacity="0.6" />
+      </radialGradient>
+
+      <filter id="fire-blur" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b" />
+        <feMerge>
+          <feMergeNode in="b" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+
+      <!-- subtle noise to feed a displacement for a soft, organic flicker (kept light for perf) -->
+      <filter id="fire-noise" x="-20%" y="-30%" width="140%" height="160%">
+        <feTurbulence baseFrequency="0.9" numOctaves="1" stitchTiles="stitch" type="fractalNoise" result="t" />
+        <feDisplacementMap in="SourceGraphic" in2="t" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
     </defs>
 
     <!-- halo behind the dove to give a modern holy glow -->
@@ -298,7 +352,6 @@ svg{
 
     <!-- dove image with soft alpha-edge filter so borders feather into the background -->
     <image href="radiant-holy-dove-stockcake.webp" x="165" y="140" width="265" height="270" preserveAspectRatio="xMidYMid slice" class="dove-blend" filter="url(#soft-edge)" clip-path="url(#dove-clip)"/>
-  </svg>
   </svg>
 
   <!-- TEXT -->
@@ -378,7 +431,8 @@ for(let i=0;i<totalBeads;i++){
   const bead = document.createElementNS('http://www.w3.org/2000/svg','circle');
   bead.setAttribute('cx', x);
   bead.setAttribute('cy', y);
-  bead.setAttribute('r', (i % beadsPerHouse === 0) ? 12 : 8);
+  // use slightly larger radii to ensure beads visually overlap consistently across browsers
+  bead.setAttribute('r', (i % beadsPerHouse === 0) ? 17 : 12);
   bead.classList.add('bead');
   if(i % beadsPerHouse === 0) bead.classList.add('super');
   else bead.classList.add('small');
@@ -387,6 +441,13 @@ for(let i=0;i<totalBeads;i++){
 }
 
 const beadEls = beadsGroup.querySelectorAll('.bead');
+
+// Debug flag: set to true to show a red marker at computed flame coordinates and console logs
+const DEBUG_FLAME_POS = false;
+
+// flame style: 'classic' | 'realistic' | 'tongues'
+let flameStyle = 'classic';
+
 
 function update() {
   // determine current language from selector
@@ -401,10 +462,14 @@ function update() {
     b.classList.remove('active');
     b.setAttribute('stroke',''); 
     b.setAttribute('stroke-width','');
+    b.classList.remove('fire');
   });
 
   // Remove previous arrows
-  document.querySelectorAll('.arrow').forEach(a => a.remove());
+  // Remove previous flame indicators
+  document.querySelectorAll('.flame').forEach(a => a.remove());
+  document.querySelectorAll('.debug-dot').forEach(d => d.remove());
+  document.querySelectorAll('.ember').forEach(e => e.remove());
 
   if(index < preArr.length){
     const step = preArr[preIndex];
@@ -423,16 +488,64 @@ function update() {
 
     const activeBead = beadEls[beadIndex];
     activeBead.classList.add('active');
-    activeBead.setAttribute('stroke','#a6ff00'); // lime hoop
-    activeBead.setAttribute('stroke-width','4');
 
-    // Optional arrow above
-    const arrow = document.createElementNS('http://www.w3.org/2000/svg','polygon');
-    arrow.setAttribute('points','0,-10 5,0 -5,0'); // small triangle
-    arrow.setAttribute('fill','#a6ff00');
-    arrow.setAttribute('class','arrow');
-    arrow.setAttribute('transform', `translate(${activeBead.cx.baseVal.value},${activeBead.cy.baseVal.value-20})`);
-    beadsGroup.appendChild(arrow);
+    // Flame indicator (Holy Spirit tongue) above the bead
+    const flame = document.createElementNS('http://www.w3.org/2000/svg','g');
+    flame.setAttribute('class','flame');
+    // compute bead center and radius using SVG baseVal to avoid NaN/top-left issues
+    const beadCx = (activeBead.cx && activeBead.cx.baseVal && Number(activeBead.cx.baseVal.value)) || Number(activeBead.getAttribute('cx')) || 0;
+    const beadCy = (activeBead.cy && activeBead.cy.baseVal && Number(activeBead.cy.baseVal.value)) || Number(activeBead.getAttribute('cy')) || 0;
+    const beadR = (activeBead.r && activeBead.r.baseVal && Number(activeBead.r.baseVal.value)) || Number(activeBead.getAttribute('r')) || 8;
+    const offsetY = -(beadR + 6); // place flame just above bead
+    // ensure numbers are finite; fallback to 0 to avoid translate(NaN,NaN)
+    const fx = Number.isFinite(beadCx) ? beadCx : 0;
+    const fy = Number.isFinite(beadCy) ? (beadCy + offsetY) : 0;
+    const scale = Math.max(1, (beadR / 8) * 1.6);
+    // translate then scale so flame size matches bead
+    flame.setAttribute('transform', `translate(${fx} ${fy}) scale(${scale})`);
+    // set transform-origin on the flame in SVG coordinates (helps some browsers)
+    flame.setAttribute('data-pos', `${fx},${fy}`);
+
+    // Debug marker + logging
+    if(DEBUG_FLAME_POS){
+      console.log('FLAME POS:', {beadIndex, beadCx, beadCy, beadR, fx, fy});
+      const debugDot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      debugDot.setAttribute('class','debug-dot');
+      debugDot.setAttribute('cx', fx);
+      debugDot.setAttribute('cy', fy);
+      debugDot.setAttribute('r', 4);
+      debugDot.setAttribute('fill', 'red');
+      beadsGroup.appendChild(debugDot);
+    }
+
+    const outer = document.createElementNS('http://www.w3.org/2000/svg','path');
+    outer.setAttribute('d','M0,-14 C6,-12 10,-6 6,2 C2,8 0,10 0,12 C0,10 -2,8 -6,2 C-10,-6 -6,-12 0,-14 Z');
+    outer.setAttribute('class','flame-outer');
+
+    const inner = document.createElementNS('http://www.w3.org/2000/svg','path');
+    inner.setAttribute('d','M0,-10 C3,-8 6,-4 4,2 C2,6 0,8 0,9 C0,8 -2,6 -4,2 C-6,-4 -3,-8 0,-10 Z');
+    inner.setAttribute('class','flame-inner');
+
+    flame.appendChild(outer);
+    flame.appendChild(inner);
+    beadsGroup.appendChild(flame);
+
+    // mark bead as on fire (applies bead fill/blur)
+    activeBead.classList.add('fire');
+
+    // create small ember particles that rise from the bead
+    const emberCount = 6;
+    for(let ei=0; ei<emberCount; ei++){
+      const ex = fx + (Math.random()* (beadR*1.2) - beadR*0.6);
+      const ey = fy + (Math.random()* (beadR*0.6) - beadR*0.3);
+      const ember = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      ember.setAttribute('class','ember');
+      ember.setAttribute('cx', ex);
+      ember.setAttribute('cy', ey);
+      ember.setAttribute('r', (Math.random()*1.8)+0.8);
+      ember.style.animationDelay = `${Math.random()*400}ms`;
+      beadsGroup.appendChild(ember);
+    }
 
     if(withinHouse === 0) {
       if(isEn) prayer.innerHTML = `✦ Gift of ${houseArr[houseIndex].name}<br>${houseArr[houseIndex].super}`;
@@ -587,6 +700,11 @@ const postPrayersEn = [
       <option value="en">English</option>
     </select>
     <button id="toggleTranslations">Show Translations</button>
+    <select id="flameSelect" aria-label="Flame style" title="Flame style">
+      <option value="classic">Classic</option>
+      <option value="realistic">Realistic</option>
+      <option value="tongues">Tongues</option>
+    </select>
   `;
   document.body.appendChild(langDiv);
 
@@ -636,6 +754,13 @@ const postPrayersEn = [
     if(typeof window.update === 'function') window.update();
     // ensure panel still shows English texts
     populatePanel();
+  });
+
+  // flame style selector behaviour
+  const flameSel = document.getElementById('flameSelect');
+  flameSel.addEventListener('change', e=>{
+    flameStyle = e.target.value || 'classic';
+    if(typeof window.update === 'function') window.update();
   });
 
 })();
