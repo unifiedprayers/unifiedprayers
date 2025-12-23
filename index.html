@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>مسبحة الروح القدس</title>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0b1324;
+  --string:#c7d2fe66;
+  --bead:#dbeafe;
+  --bead-soft:#eef2ff;
+  --bead-super:#fde68a;
+  --active:#ffe680;
+  --text:#f8fafc;
+  --muted:#dbeafe;
+}
+
+body, button, svg {
+  touch-action: manipulation;
+}
+
+
+html,body{
+  margin:0;
+  height:100%;
+  background:radial-gradient(circle at center, #1e293b, var(--bg));
+  font-family:"Cairo", system-ui, sans-serif;
+  direction:rtl;
+  color:var(--text);
+  overflow:hidden;
+}
+
+.app{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  padding:20px;
+  position:relative;
+}
+
+svg{
+  width:88vmin;
+  max-width:520px;
+  height:auto;
+}
+
+.string{ fill:none; stroke:var(--string); stroke-width:3; }
+
+.bead{
+  fill:var(--bead);
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,.35));
+  transition: fill .3s ease, filter .3s ease;
+}
+.bead.small{ fill:var(--bead-soft); r:16; }
+.bead.super{
+  fill:var(--bead-super);
+  filter: drop-shadow(0 0 12px rgba(253,230,138,.7));
+}
+
+.text{
+  text-align:center;
+  max-width:480px;
+  line-height:1.9;
+  font-size:20px;
+  padding:0 20px;
+}
+
+.hint{
+  font-size:14px;
+  color:var(--muted);
+}
+
+.counter{
+  font-size:14px;
+  color:var(--muted);
+  letter-spacing:.5px;
+  position: fixed;              /* keep counter visible at viewport bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 12px;
+  z-index: 70;
+  background: transparent;
+  padding: 6px 10px;
+  pointer-events: none;        /* allow clicks to pass through if necessary */
+}
+
+/* wrapper for prayers to allow a controlled vertical offset */
+.prayer-wrap {
+  margin-top: 50px; /* small nudge on mobile */
+}
+
+svg{
+  width: 95vmin;      /* almost full width */
+  height: auto;
+  touch-action: none; /* prevent default gestures */
+  user-select: none;
+}
+
+
+/* Navigation arrows */
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 230, 128, 0.1); /* subtle yellow circle */
+  border: none;
+  color: #ffe680; /* yellow arrow */
+  font-size: 24px;
+  padding: 12px 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px 2px rgba(255, 230, 128, 0.5); /* subtle glow */
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  z-index: 20;
+}
+
+.dove-blend {
+  opacity: 0.98;
+  /* soft radial mask so the dove feathers out toward edges */
+  mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 95%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 95%);
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: cover;
+  -webkit-mask-size: cover;
+  border-radius: 50%;
+  mix-blend-mode: screen; /* helps integrate colors with page background */
+  transition: opacity .4s ease, transform .4s ease;
+  will-change: opacity, transform;
+  pointer-events: none;
+}
+
+.dove-bg {
+  fill: var(--bg);
+  opacity: 0.95;
+  filter: blur(6px);
+}
+
+.dove-halo {
+  mix-blend-mode: screen;
+  opacity: 0.95;
+  transition: opacity .6s ease, transform .6s ease;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+@keyframes halo-pulse {
+  0% { transform: scale(0.98); opacity: .9; }
+  50% { transform: scale(1.02); opacity: 1; }
+  100% { transform: scale(0.98); opacity: .9; }
+}
+
+.dove-halo.animate { animation: halo-pulse 3.6s ease-in-out infinite; }
+
+.nav:hover{ opacity:.7; background:rgba(255,255,255,.12); box-shadow: 0 0 10px 2px rgba(255,255,255,0.25); }
+.nav.left{ left:10px; }
+.nav.right{ right:10px; }
+
+/* Tap zones */
+.zone{
+  position:fixed;
+  top:0; bottom:0;
+  width:50%;
+  z-index:10;
+}
+.zone.left{ left:0; }
+.zone.right{ right:0; }
+
+.bead.active {
+  fill: var(--bead); /* normal color stays the same */
+  stroke: #a6ff00;   /* bright lime green ring */
+  stroke-width: 4px;
+  r: 16;             /* slightly bigger radius if needed */
+  animation: pulse 1s infinite;
+}
+
+
+@media (min-width: 800px) {
+  /* Use the `.app.layout` parent as the fixed split container (60% text, 40% rosary)
+     so both columns are independent and won't reflow each other when content changes. */
+  :root { --rosary-width: clamp(360px, 40vw, 520px); --top-offset: 36px; }
+
+  .app.layout {
+    position: relative;
+    height: calc(100vh - var(--top-offset));
+    width: 100%;
+    max-width: 1200px;          /* center container */
+    margin: var(--top-offset) auto 0;
+    padding: 0 24px;           /* horizontal padding applied to container */
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  /* Left: text column (60%) — absolutely positioned and independently scrollable */
+  .app.layout .content {
+    position: absolute;
+    left: 0;                   /* starts at container's left padding edge */
+    top: 0;
+    bottom: 0;
+    right: calc(var(--rosary-width) + 24px); /* leave room for rosary + gutter */
+    padding: 20px 0;           /* vertical padding inside content only */
+    box-sizing: border-box;
+    overflow: auto;
+    scrollbar-gutter: stable both-edges;
+    overscroll-behavior: contain;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Right: rosary column (40%) — positioned inside the same parent so it won't shift */
+  .app.layout .rosary {
+    position: absolute;
+    right: 24px;               /* honor container padding as gutter */
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--rosary-width);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    contain: paint;
+    transition: none !important;
+  }
+
+  /* Make the SVG fill most of the rosary column while preserving aspect ratio */
+  .app.layout .rosary svg {
+    width: 88%;
+    height: auto;
+    max-height: 90vh;
+    display: block;
+    transition: none !important;
+    backface-visibility: hidden;
+  }
+
+  /* Put nav and zones above columns */
+  .zone, .nav { z-index: 60; }
+}
+</style>
+</head>
+<body>
+
+<div class="app.layout">
+
+  <!-- NAV -->
+  <button class="nav right" aria-label="التالي">❮</button>
+  <button class="nav left" aria-label="السابق">❯</button>
+
+  <!-- ROSARY -->
+  <svg viewBox="0 0 600 600" aria-label="مسبحة الروح القدس" class="rosary">
+    <circle cx="300" cy="270" r="205" class="string" />
+    <g id="beads"></g>
+    <defs>
+      <filter id="soft-edge" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="18" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+      <!-- halo gradient + subtle glow filter -->
+      <radialGradient id="halo-grad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fff8c2" stop-opacity="0.9" />
+        <stop offset="35%" stop-color="#ffe680" stop-opacity="0.65" />
+        <stop offset="70%" stop-color="#ffd964" stop-opacity="0.18" />
+        <stop offset="100%" stop-color="#ffd964" stop-opacity="0" />
+      </radialGradient>
+
+      <filter id="halo-blur" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="hb" />
+        <feMerge>
+          <feMergeNode in="hb" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+      <!-- circular clip for the dove image to avoid square edges over the halo -->
+      <clipPath id="dove-clip" clipPathUnits="userSpaceOnUse">
+        <!-- center roughly where the dove is drawn; radius slightly smaller than image half-size -->
+        <circle cx="300" cy="270" r="130" />
+      </clipPath>
+    </defs>
+
+    <!-- halo behind the dove to give a modern holy glow -->
+    <circle cx="300" cy="270" r="165" class="dove-halo" fill="url(#halo-grad)" filter="url(#halo-blur)" />
+
+    <!-- subtle background disk to help image blend with page background -->
+    <circle cx="300" cy="270" r="130" class="dove-bg" />
+
+    <!-- dove image with soft alpha-edge filter so borders feather into the background -->
+    <image href="radiant-holy-dove-stockcake.webp" x="165" y="140" width="265" height="270" preserveAspectRatio="xMidYMid slice" class="dove-blend" filter="url(#soft-edge)" clip-path="url(#dove-clip)"/>
+  </svg>
+  </svg>
+
+  <!-- TEXT -->
+  <div class="text content">
+    <div class="prayer-wrap">
+      <div id="prayer"></div>
+      <div class="counter" id="counter"></div>
+    </div>
+  </div>
+</div>
+
+<div class="zone left"></div>
+<div class="zone right"></div>
+
+<script>
+// --- Arabic source texts ---
+const prePrayers = [
+  { name: 'تقديم الذات للروح القدس', sections: [
+    'يا روح الله، إنا نقدم لك ذواتنا وصلواتنا مع صلاة مريم العذراء والرسل المجتمعين في العلية طالبين منك أن تأتي وتجددنا وتجدد وجه الأرض.',
+    'هلم أيها الروح القدس، وأرسل من السماء شعاع نورك هلم يا أبا المساكين. هلم يا معطي المواهب. هلم يا ضياء القلوب، أيها المعزي الجليل، يا ساكن القلوب العذب، أيتها الاستراحة اللذيذة.',
+    'أنتَ في التعب راحة وفي الحر اعتدال وفي البكاء تعزية، أيها النور الطوباوي، إملأ باطن قلوب المؤمنين، لأنه بدون قدرتك لا شيء في الإنسان ولا شيء طاهر.',
+    'طهر ما كان دنساً، إسق ما كان يابساً، اشف ما كان معلولا، لين ما كان صلباً، أضرم ما كان بارداً، دبّر ما كان حائداً.',
+    'أعط مؤمنيك المتكلين عليك المواهب السبع، إمنحهم ثواب الفضيلة، هب لهم غاية الخلاص، أعطهم السرور الأبدي. آمین.',
+  ]},
+  { name: 'الصلاة لمريم العذراء', sections: [
+    'يا مريم، أيتها العذراء الكلية الطهارة، أنت التي بحبلك بلا دنس، جعل منك الروح القدس بيت القربان الإلهي، صلي لأجلنا.',
+    'لكي يأتي الروح القدس الله قريباً، ويجدّد وجه الأرض. (السلام عليك...)',
+    'يا مريم، أيتها العذراء الكلية الطهارة، أنت التي بسر التجسد أصبحت بالروح القدس أم الله الحقيقية، صلي لأجلنا.',
+    'لكي يأتي الروح القدس الله قريباً، ويجدّد وجه الأرض. (السلام عليك...)',
+    'يا مريم، أيتها العذراء الكلية الطهارة، أنت التي صلّيت في العلية مع الرسل فامتلأت بفيض من الروح القدس، صلي لأجلنا.',
+    'لكي يأتي الروح القدس الله قريباً، ويجدّد وجه الأرض. (السلام عليك...)'
+  ]},
+  { name: 'صلاة لاستمداد مواهب الروح القدس', sections: [
+    'يا حبيبي يسوع، يا ذا الجود والصلاح يا من قبل صعودك إلى السماء، وعدت تلاميذك بإرسال روحك القدوس إليهم، ليعزيهم ويُشددهم.',
+    'تعطف وأرسل إلينا هذا الروح الذي يقدس النفوس ليحل فينا ويقدسنا ويملأنا من مواهبه السنية. آمين.'
+  ]}
+];
+
+const houseInfo = [
+  {name:'الحكمة', super:'تعال يا روح الحكمة، وحل فينا لتدلنا على الخير الحقيقي وتوفر لنا وسائل الحصول عليه. (أبانا الذي...)'},
+  {name:'الفهم', super:'تعال يا روح الفهم، وحل فينا، وأنر عقولنا لندرك حقائق ديانتنا وأسرارها العميقة. (أبانا الذي...)'},
+  {name:'العلم', super:'تعال يا روح العلم، وحل فينا لنعرف الله ونعرف ذواتنا والآخرين، لأن المعرفة أساس المحبة. (أبانا الذي...)'},
+  {name:'المشورة', super:'تعال يا روح المشورة، وحل فينا، ونوّرنا لنعرف مشيئة الله، وقوّنا على إتمامها. (أبانا الذي...)'},
+  {name:'القوة', super:'تعال يا روح القوة، وحل فينا، واملأ قلوبنا م الله، وقونا على إتمام واجباتنا بكل أمانة وإخلاص. (أبانا الذي...)'},
+  {name:'مخافة الله', super:'تعال يا روح المخافة، وحل فينا، وقوّنا على أن نحترم الله وأوامر الله ووصاياه. (أبانا الذي...)'},
+  {name:'التقوى', super:'تعال يا روح التقوى، وحل فينا، وأنعم علينا بأن نختبر أن نيرك طيب وحملك خفيف ونستطيع حمله. (أبانا الذي...)'}
+];
+
+const postPrayers = [
+  {name: 'صلاة الختام: لمريم سيدة جميع الشعوب', sections:[
+    'أيها الرب يسوع يا ابن ألآب، أفض الآن روحك على الأرض، وأسكن الروح القدس في قلوب جميع الشعوب، ليُحفظوا من الفساد ومن الحرب ومن الآفات، ولتكن سيدة جميع الشعوب، وهي مريم محامية لنا، آمين.',
+    'كما تتطاير رقع الثلج وتتساقط وكما يذوب الثلج في الأرض هكذا ينزل الروح القدس في قلوب الذين يتلون هذه الصلاة كل يوم.'
+  ]}
+];
+
+const beadsPerHouse = 8;
+const totalBeads = houseInfo.length * beadsPerHouse;
+
+const beadsGroup = document.getElementById('beads');
+const prayer = document.getElementById('prayer');
+const counter = document.getElementById('counter');
+
+let index = 0;
+let preIndex = 0, preSection = 0;
+let postIndex = 0, postSection = 0;
+
+const cx = 300, cy = 270, r = 205;
+const superSpacing = 1.15;
+
+// --- create beads ---
+for(let i=0;i<totalBeads;i++){
+  const angle = (Math.PI*2/totalBeads)*i - Math.PI/2;
+  const pulse = (i % beadsPerHouse === 0) ? superSpacing : 1;
+  const x = cx + r*pulse*Math.cos(angle);
+  const y = cy + r*pulse*Math.sin(angle);
+
+  const bead = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  bead.setAttribute('cx', x);
+  bead.setAttribute('cy', y);
+  bead.setAttribute('r', (i % beadsPerHouse === 0) ? 12 : 8);
+  bead.classList.add('bead');
+  if(i % beadsPerHouse === 0) bead.classList.add('super');
+  else bead.classList.add('small');
+
+  beadsGroup.appendChild(bead);
+}
+
+const beadEls = beadsGroup.querySelectorAll('.bead');
+
+function update() {
+  // determine current language from selector
+  const sel = document.getElementById('langSelect');
+  const isEn = sel && sel.value === 'en';
+  const preArr = isEn ? prePrayersEn : prePrayers;
+  const houseArr = isEn ? houseInfoEn : houseInfo;
+  const postArr = isEn ? postPrayersEn : postPrayers;
+
+  // Reset all beads
+  beadEls.forEach(b => {
+    b.classList.remove('active');
+    b.setAttribute('stroke',''); 
+    b.setAttribute('stroke-width','');
+  });
+
+  // Remove previous arrows
+  document.querySelectorAll('.arrow').forEach(a => a.remove());
+
+  if(index < preArr.length){
+    const step = preArr[preIndex];
+    if(isEn) {
+      prayer.innerHTML = `<h3>${step.name}</h3><p>${step.sections[preSection]}</p>`;
+      counter.textContent = `Intro ${preIndex+1} - section ${preSection+1} / ${step.sections.length}`;
+    } else {
+      prayer.innerHTML = `<h3>${step.name}</h3><p>${step.sections[preSection]}</p>`;
+      counter.textContent = `التمهيد ${preIndex+1} - قسم ${preSection+1} / ${step.sections.length}`;
+    }
+  }
+  else if(index >= prePrayers.length && index < prePrayers.length + totalBeads){
+    const beadIndex = index - preArr.length;
+    const houseIndex = Math.floor(beadIndex / beadsPerHouse);
+    const withinHouse = beadIndex % beadsPerHouse;
+
+    const activeBead = beadEls[beadIndex];
+    activeBead.classList.add('active');
+    activeBead.setAttribute('stroke','#a6ff00'); // lime hoop
+    activeBead.setAttribute('stroke-width','4');
+
+    // Optional arrow above
+    const arrow = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    arrow.setAttribute('points','0,-10 5,0 -5,0'); // small triangle
+    arrow.setAttribute('fill','#a6ff00');
+    arrow.setAttribute('class','arrow');
+    arrow.setAttribute('transform', `translate(${activeBead.cx.baseVal.value},${activeBead.cy.baseVal.value-20})`);
+    beadsGroup.appendChild(arrow);
+
+    if(withinHouse === 0) {
+      if(isEn) prayer.innerHTML = `✦ Gift of ${houseArr[houseIndex].name}<br>${houseArr[houseIndex].super}`;
+      else prayer.innerHTML = `✦ موهبة ${houseArr[houseIndex].name}<br>${houseArr[houseIndex].super}`;
+    } else if(withinHouse === 7){
+      if(isEn) prayer.innerHTML = 'Come, Holy Spirit, and fill the hearts of the faithful. Glory to the eternal Father, the only-begotten Son, and the living Spirit, now and forever. Amen';
+      else prayer.innerHTML = 'أرسل روحك فيُخلقوا، ويتجدد وجه الأرض. المجد للآب الأزلي، والابن الوحيد الفادي، والروح الحي المعزي الآن وإلى الأبد آمين.';
+    } else {
+      if(isEn) prayer.textContent = 'Come, Holy Spirit, and renew the face of the earth';
+      else prayer.textContent = 'أرسل روحك فيُخلقوا، ويتجدد وجه الأرض.';
+    }
+
+    if(isEn) counter.textContent = `Gift ${houseIndex+1} of ${houseArr.length} • Bead ${withinHouse+1} of ${beadsPerHouse}`;
+    else counter.textContent = `موهبة ${houseIndex+1} / ${houseArr.length} • حبة ${withinHouse+1} / ${beadsPerHouse}`;
+  }
+  else{
+    const postStep = postArr[postIndex];
+    if(isEn){
+      prayer.innerHTML = `<h3>${postStep.name}</h3><p>${postStep.sections[postSection]}</p>`;
+      counter.textContent = `Closing ${postIndex+1} - section ${postSection+1} / ${postStep.sections.length}`;
+    } else {
+      prayer.innerHTML = `<h3>${postStep.name}</h3><p>${postStep.sections[postSection]}</p>`;
+      counter.textContent = `الختام ${postIndex+1} - قسم ${postSection+1} / ${postStep.sections.length}`;
+    }
+  }
+}
+
+function next(){
+  if(index < prePrayers.length){
+    if(preSection < prePrayers[preIndex].sections.length-1){
+      preSection++;
+    } else {
+      preSection = 0;
+      preIndex++;
+      index++;
+    }
+  }
+  else if(index >= prePrayers.length && index < prePrayers.length + totalBeads){
+    index++;
+  }
+  else if(index >= prePrayers.length + totalBeads){
+    const postStep = postPrayers[postIndex];
+    if(postSection < postStep.sections.length-1){
+      postSection++;
+    } else {
+      postSection = 0;
+      postIndex++;
+      index++;
+    }
+  }
+  update();
+}
+
+function prev(){
+  if(index > prePrayers.length + totalBeads){
+    const postStep = postPrayers[postIndex];
+    if(postSection>0){
+      postSection--;
+    } else {
+      postIndex--;
+      postStep.sections.length && (postSection = postPrayers[postIndex].sections.length-1);
+      index--;
+    }
+  }
+  else if(index > prePrayers.length){
+    index--;
+  }
+  else if(index > 0){
+    if(preSection>0) preSection--;
+    else{
+      preIndex--;
+      preSection = prePrayers[preIndex].sections.length-1;
+      index--;
+    }
+  }
+  update();
+}
+
+document.querySelector('.zone.right').onclick = next;
+document.querySelector('.zone.left').onclick = prev;
+document.querySelector('.nav.right').onclick = next;
+document.querySelector('.nav.left').onclick = prev;
+
+window.addEventListener('keydown', e=>{
+  if(e.key==='ArrowRight') next();
+  if(e.key==='ArrowLeft') prev();
+});
+
+update();
+</script>
+
+<script>
+// --- English translation data (mirrors Arabic arrays) ---
+const prePrayersEn = [
+  { name: 'Offering of Self to the Holy Spirit', sections: [
+    'O Spirit of God, we offer you our persons and our prayers with the prayer of Mary and the apostles gathered in the upper room, asking you to come, renew us, and renew the face of the earth',
+    'Come, O Holy Spirit, and send from heaven the ray of your light. Come, Father of the poor. Come, giver of gifts. Come, O light of hearts, O glorious Comforter, O sweet inhabitant of hearts, delightful rest',
+    'You are rest in labor, temperance in heat, and consolation in weeping, O beatific light; fill the inner hearts of the faithful, for without your power nothing in man is pure',
+    'Purify what was defiled, water what was dry, heal what was sick, soften what was rigid, inflame what was cold, correct what has gone astray',
+    'Grant to your faithful who trust in you the seven gifts; grant them the reward of virtue; give them the goal of salvation and eternal joy. Amen'
+  ]},
+  { name: 'Prayer to the Virgin Mary', sections: [
+    'O Mary, immaculate Virgin, you who by your sinless womb became through the Holy Spirit the dwelling of the Divine Sacrament, pray for us',
+    'That the Holy Spirit may come soon and renew the face of the earth. (Hail Mary...)',
+    'O Mary, immaculate Virgin, who by the mystery of the Incarnation through the Holy Spirit became the true Mother of God, pray for us',
+    'That the Holy Spirit may come soon and renew the face of the earth. (Hail Mary...)',
+    'O Mary, immaculate Virgin, who prayed in the upper room with the apostles and was filled with an outpouring of the Holy Spirit, pray for us',
+    'That the Holy Spirit may come soon and renew the face of the earth. (Hail Mary...)'
+  ]},
+  { name: 'Prayer to Receive the Gifts of the Holy Spirit', sections: [
+    'My beloved Jesus, O generous and good One, You who before Your ascension promised Your disciples to send them Your Holy Spirit to console and strengthen them',
+    'Have mercy and send upon us this Spirit who sanctifies souls to dwell in us, sanctify us, and fill us with His holy gifts. Amen'
+  ]}
+];
+
+const houseInfoEn = [
+  {name:'Wisdom', super:'Come, O Spirit of Wisdom, and dwell in us to guide us to true good and provide the means to obtain it. (Our Father...)'},
+  {name:'Understanding', super:'Come, O Spirit of Understanding, and dwell in us, enlighten our minds to perceive the truths and mysteries of our faith. (Our Father...)'},
+  {name:'Knowledge', super:'Come, O Spirit of Knowledge, and dwell in us to know God, ourselves and others, for knowledge is the foundation of love. (Our Father...)'},
+  {name:'Counsel', super:'Come, O Spirit of Counsel, and dwell in us, enlighten us to know God\'s will and strengthen us to accomplish it. (Our Father...)'},
+  {name:'Fortitude', super:'Come, O Spirit of Fortitude, and dwell in us, fill our hearts with courage and strengthen us to fulfill our duties faithfully. (Our Father...)'},
+  {name:'Fear of the Lord', super:'Come, O Spirit of the Fear of the Lord, and dwell in us, strengthen us to revere God and keep His commandments. (Our Father...)'},
+  {name:'Piety', super:'Come, O Spirit of Piety, and dwell in us, grant us to know your sweet yoke and bear it lightly. (Our Father...)'}
+];
+
+const postPrayersEn = [
+  {name: 'Closing Prayer: For Mary, Lady of All Peoples', sections:[
+    'Lord Jesus, Son of the Father, pour out now Your Spirit upon the earth and let the Holy Spirit dwell in the hearts of all peoples, that they may be preserved from corruption, war and afflictions, and may Mary be Lady of all peoples and our advocate. Amen',
+    'As snowflakes scatter and fall and as snow melts into the ground, so the Holy Spirit descends into the hearts of those who recite this prayer each day'
+  ]}
+];
+
+// --- UI: language selector + translations panel ---
+(function(){
+  let lang = 'ar';
+  const headStyle = document.createElement('style');
+  headStyle.innerHTML = `
+    .lang-toggle{ position:fixed; top:12px; left:12px; z-index:9999; background:rgba(255,255,255,0.06); padding:6px 8px; border-radius:6px; backdrop-filter: blur(4px); display:flex; gap:8px; align-items:center; }
+    .lang-toggle select, .lang-toggle button{ font-family: Cairo, sans-serif; font-size:14px; padding:6px 8px; border-radius:4px; border:1px solid rgba(0,0,0,0.12); }
+    #translationsPanel{ position:fixed; top:60px; right:12px; bottom:12px; width:380px; max-width:calc(100% - 40px); overflow:auto; background: #fff; color:#111; padding:16px; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.35); z-index:9998; display:none; direction:ltr; }
+    #translationsPanel h3{ margin-top:14px; margin-bottom:6px; font-size:16px; }
+    #translationsPanel p{ margin:6px 0 12px; line-height:1.45; }
+    #translationsPanel .arabic{ direction:rtl; font-family: 'Cairo', sans-serif; font-size:15px; color:#222; }
+    #translationsPanel .english{ font-family: 'Cairo', sans-serif; font-size:14px; color:#333; }
+  `;
+  document.head.appendChild(headStyle);
+
+  const langDiv = document.createElement('div'); langDiv.className = 'lang-toggle';
+  langDiv.innerHTML = `
+    <select id="langSelect" aria-label="Language selector">
+      <option value="ar">العربية</option>
+      <option value="en">English</option>
+    </select>
+    <button id="toggleTranslations">Show Translations</button>
+  `;
+  document.body.appendChild(langDiv);
+
+  const panel = document.createElement('div'); panel.id = 'translationsPanel';
+  document.body.appendChild(panel);
+
+  function populatePanel(){
+    const p = []; // build html
+    const source = (lang === 'ar') ? prePrayersEn : prePrayersEn; // always show English in panel
+    p.push('<h2 style="margin:0 0 8px;">English Translations — Prayers of the Holy Spirit</h2>');
+
+    prePrayersEn.forEach(item => {
+      p.push(`<section><h3 class="arabic">${item.name}</h3>`);
+      item.sections.forEach(s => p.push(`<p class="english">${s}</p>`));
+      p.push('</section>');
+    });
+
+    p.push('<section><h3 class="arabic">Gifts of the Holy Spirit</h3>');
+    houseInfoEn.forEach(h=>{
+      p.push(`<p class="english"><strong>${h.name}:</strong> ${h.super}</p>`);
+    });
+    p.push('</section>');
+
+    postPrayersEn.forEach(item=>{
+      p.push(`<section><h3 class="arabic">${item.name}</h3>`);
+      item.sections.forEach(s => p.push(`<p class="english">${s}</p>`));
+      p.push('</section>');
+    });
+
+    panel.innerHTML = p.join('');
+  }
+  populatePanel();
+
+  // language switch behaviour
+  const select = document.getElementById('langSelect');
+  const toggleBtn = document.getElementById('toggleTranslations');
+  let panelVisible = false;
+  toggleBtn.addEventListener('click', ()=>{
+    panelVisible = !panelVisible;
+    panel.style.display = panelVisible ? 'block' : 'none';
+    toggleBtn.textContent = panelVisible ? 'Hide Translations' : 'Show Translations';
+  });
+
+  select.addEventListener('change', e=>{
+    lang = e.target.value;
+    // update main UI by calling update() defined in the other script
+    if(typeof window.update === 'function') window.update();
+    // ensure panel still shows English texts
+    populatePanel();
+  });
+
+})();
+
+</script>
+
+
+</body>
+</html>
+
+<script>
+// ensure any translation popup UI stays hidden — main UI will switch languages
+document.addEventListener('DOMContentLoaded', function(){
+  const t = document.getElementById('toggleTranslations');
+  if(t) t.style.display = 'none';
+  const p = document.getElementById('translationsPanel');
+  if(p) p.style.display = 'none';
+});
+</script>
