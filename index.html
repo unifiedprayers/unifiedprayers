@@ -279,6 +279,32 @@ svg{
   /* Put nav and zones above columns */
   .zone, .nav { z-index: 60; }
 }
+
+.popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .popup-content {
+            text-align: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
 </style>
 </head>
 <body>
@@ -351,7 +377,7 @@ svg{
     <circle cx="300" cy="270" r="130" class="dove-bg" />
 
     <!-- dove image with soft alpha-edge filter so borders feather into the background -->
-    <image href="radiant-holy-dove-stockcake.webp" x="165" y="140" width="265" height="270" preserveAspectRatio="xMidYMid slice" class="dove-blend" filter="url(#soft-edge)" clip-path="url(#dove-clip)"/>
+    <image href="radiant-holy-dove-stockcake.webp" x="165" y="140" width="265" height="270" preserveAspectRatio="xMidYMid slice" class="dove-blend" filter="url(#soft-edge)" clip-path="url(#dove-clip)" id="dove"/>
   </svg>
 
   <!-- TEXT -->
@@ -363,10 +389,28 @@ svg{
   </div>
 </div>
 
+<div id="popup" class="popup">
+        <div class="popup-content">
+            <span id="prayer">هلم أيها الروح القدس، أرسل من السماء شعاع نورك هلم يا أبا المساكين. هلم يا معولا المواهب. هلم يا ضياء القلوب، أيها المعزية الجليل، هلم يا ساكن القلوب العذب، أيتها الاستراحة اللذيذة.</span>
+            <div class="close-button" onclick="closePopup()">X</div>
+        </div>
+    </div>
+
 <div class="zone left"></div>
 <div class="zone right"></div>
 
 <script>
+
+  function openPopup() {
+            document.getElementById('popup').style.display = 'flex';
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+
+        var dove = document.getElementById('dove');
+        dove.addEventListener('click', openPopup);
 // --- Arabic source texts ---
 const prePrayers = [
   { name: 'تقديم الذات للروح القدس', sections: [
@@ -700,11 +744,6 @@ const postPrayersEn = [
       <option value="en">English</option>
     </select>
     <button id="toggleTranslations">Show Translations</button>
-    <select id="flameSelect" aria-label="Flame style" title="Flame style">
-      <option value="classic">Classic</option>
-      <option value="realistic">Realistic</option>
-      <option value="tongues">Tongues</option>
-    </select>
   `;
   document.body.appendChild(langDiv);
 
