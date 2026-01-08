@@ -89,6 +89,10 @@ svg{
   margin-top: 50px; /* small nudge on mobile */
 }
 
+#prayer {
+  margin-top: -80px; /* lift prayer text up by 15px */
+}
+
 
 /* Navigation arrows */
 .nav {
