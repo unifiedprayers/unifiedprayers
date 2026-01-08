@@ -80,14 +80,14 @@ const postPrayersEn = [
 const maryPrePrayers = [
   { name: 'علامة الصليب', sections: ['باسم الآب والابن والروح القدس. آمين.'] },
   { name: 'الإيمان الرسولي', sections: [
-    'أؤمن بالله الآب القدير خالق السماء والأرض.',
-    'وباليسوع المسيح ابنه الوحيد ربنا. الذي حبل به من الروح القدس. ولد من مريم العذراء.',
-    'تألم في أيام بيلاطس البنطي. صلب. مات ودفن. نزل إلى الجحيم.',
-    'في اليوم الثالث قام من بين الأموات. صعد إلى السماء. جلس عن يمين الآب.',
-    'من هناك سيأتي ليدين الأحياء والأموات. أؤمن بالروح القدس.',
-    'الكنيسة المقدسة الكاثوليكية. شركة القديسين. مغفرة الخطايا. قيامة الجسد. والحياة الأبدية. آمين.'
+    'أؤمن بالله الآب القدير خالق السماء والأرض. وباليسوع المسيح ابنه الوحيد ربنا. الذي حبل به من الروح القدس. ولد من مريم العذراء.',
+    'تألم في أيام بيلاطس البنطي. صلب. مات ودفن. نزل إلى الجحيم في اليوم الثالث قام من بين الأموات. صعد إلى السماء.',
+    '. جلس عن يمين الآب. من هناك سيأتي ليدين الأحياء والأموات. أؤمن بالروح القدس. الكنيسة المقدسة الكاثوليكية. شركة القديسين. مغفرة الخطايا. قيامة الجسد. والحياة الأبدية. آمين.'
   ] },
-  { name: 'أبانا', sections: ['أبانا الذي في السموات. يتقدس اسمك. يأتي ملكوتك. يكن مشيئتك كما في السماء كذلك على الأرض. أعطنا خبزنا كفافنا اليومي. واغفر لنا ذنوبنا كما نغفر نحن للمذنبين إلينا. ولا تدخلنا في تجربة لكن نجنا من الشرير. آمين.'] },
+  { name: 'أبانا', sections: [
+    'أبانا الذي في السموات. يتقدس اسمك. يأتي ملكوتك. يكن مشيئتك كما في السماء كذلك على الأرض.',
+    'أعطنا خبزنا كفافنا اليومي. واغفر لنا ذنوبنا كما نغفر نحن للمذنبين إلينا. ولا تدخلنا في تجربة لكن نجنا من الشرير. آمين.'
+  ] },
   { name: 'السلام عليك يا مريم (ثلاث مرات)', sections: [
     'السلام عليك يا مريم ملأنة نعمة الرب معك. مباركة أنت في النساء ومبارك ثمرة بطنك يسوع. يا قديسة مريم يا أم الله صلي لأجلنا نحن الخطأة الآن وفي ساعة موتنا. آمين.',
     'السلام عليك يا مريم ملأنة نعمة الرب معك. مباركة أنت في النساء ومبارك ثمرة بطنك يسوع. يا قديسة مريم يا أم الله صلي لأجلنا نحن الخطأة الآن وفي ساعة موتنا. آمين.',
@@ -130,44 +130,40 @@ const maryMysterySets = {
 
 const maryPostPrayers = [
   {name: 'السلام عليك يا ملكة', sections:[
-    'السلام عليك يا ملكة السماء يا أم الرحمة. حياتنا وحلاوتنا ورجاؤنا.',
-    'السلام عليك. إليك نصرخ نحن أبناء حواء المطرودين. إليك نرسل تنهداتنا باكين ويائكين',
-    'في هذا الوادي المسكوب بالدموع. فأقبلي يا شفيعة يا لطيفة عينيك علينا.',
-    'وبعد غربة هذه الحياة أرينا يسوع ثمرة بركة أحشائك.',
-    'يا رؤوم يا حنان يا عذراء مريم. صلي لأجلنا يا قديسة أم الله.',
-    'لنستحق مواعيد المسيح. آمين.'
+    'السلام عليك يا ملكة السماء يا أم الرحمة. حياتنا وحلاوتنا ورجاؤنا. السلام عليك. إليك نصرخ نحن أبناء حواء المطرودين. إليك نرسل تنهداتنا باكين ويائكين في هذا الوادي المسكوب بالدموع. فأقبلي يا شفيعة يا لطيفة عينيك علينا.',
+    'وبعد غربة هذه الحياة أرينا يسوع ثمرة بركة أحشائك. يا رؤوم يا حنان يا عذراء مريم. صلي لأجلنا يا قديسة أم الله. لنستحق مواعيد المسيح. آمين.'
   ]}
 ];
 
 // English Rosary mysteries
 const maryMysterySetsEn = {
   joyful: [
-    {name:'The Annunciation', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Visitation', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Nativity', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Presentation', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Finding in the Temple', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'}
+    {name:'The Annunciation', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Visitation', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Nativity', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Presentation', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Finding in the Temple', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']}
   ],
   sorrowful: [
-    {name:'The Agony in the Garden', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Scourging at the Pillar', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Crowning with Thorns', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Carrying of the Cross', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Crucifixion', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'}
+    {name:'The Agony in the Garden', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Scourging at the Pillar', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Crowning with Thorns', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Carrying of the Cross', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Crucifixion', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']}
   ],
   glorious: [
-    {name:'The Resurrection', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Ascension', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Descent of the Holy Spirit', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Assumption of Mary', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Coronation of Mary', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'}
+    {name:'The Resurrection', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Ascension', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Descent of the Holy Spirit', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Assumption of Mary', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Coronation of Mary', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']}
   ],
   luminous: [
-    {name:'The Baptism of Jesus', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Wedding at Cana', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Proclamation of the Kingdom', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Transfiguration', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'},
-    {name:'The Institution of the Eucharist', super:'Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen'}
+    {name:'The Baptism of Jesus', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Wedding at Cana', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Proclamation of the Kingdom', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Transfiguration', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']},
+    {name:'The Institution of the Eucharist', super:['Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven.', 'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen.']}
   ]
 };
 
@@ -175,79 +171,54 @@ const maryMysterySetsEn = {
 const maryPrePrayersEn = [
   { name: 'Sign of the Cross', sections: ['In the name of the Father, and of the Son, and of the Holy Spirit Amen'] },
   { name: 'Apostles\' Creed', sections: [
-    'I believe in God, the Father almighty, Creator of heaven and earth',
-    'and in Jesus Christ, his only Son, our Lord',
-    'who was conceived by the Holy Spirit, born of the Virgin Mary',
-    'suffered under Pontius Pilate, was crucified, died and was buried',
-    'he descended into hell on the third day he rose again from the dead',
-    'he ascended into heaven, and is seated at the right hand of the Father',
-    'he will come again to judge the living and the dead I believe in the Holy Spirit',
-    'the holy catholic Church, the communion of saints, the forgiveness of sins',
-    'the resurrection of the body, and life everlasting Amen'
+    'I believe in God, the Father almighty, Creator of heaven and earth and in Jesus Christ, his only Son, our Lord who was conceived by the Holy Spirit, born of the Virgin Mary suffered under Pontius Pilate, was crucified, died and was buried',
+    'he descended into hell on the third day he rose again from the dead he ascended into heaven, and is seated at the right hand of the Father he will come again to judge the living and the dead I believe in the Holy Spirit',
+    'the holy catholic Church, the communion of saints, the forgiveness of sins the resurrection of the body, and life everlasting Amen'
   ] },
   { name: 'Our Father', sections: [
-    'Our Father, who art in heaven, hallowed be thy name',
-    'thy kingdom come, thy will be done on earth as it is in heaven',
-    'Give us this day our daily bread, and forgive us our trespasses',
-    'as we forgive those who trespass against us',
-    'and lead us not into temptation, but deliver us from evil Amen'
+    'Our Father, who art in heaven, hallowed be thy name thy kingdom come, thy will be done on earth as it is in heaven',
+    'Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us, and lead us not into temptation, but deliver us from evil Amen'
   ] },
   { name: 'Hail Mary (three times)', sections: [
-    'Hail Mary, full of grace, the Lord is with thee',
-    'Blessed art thou amongst women, and blessed is the fruit of thy womb, Jesus',
-    'Holy Mary, Mother of God, pray for us sinners',
-    'now and at the hour of our death Amen',
-    'Hail Mary, full of grace, the Lord is with thee',
-    'Blessed art thou amongst women, and blessed is the fruit of thy womb, Jesus',
-    'Holy Mary, Mother of God, pray for us sinners',
-    'now and at the hour of our death Amen',
-    'Hail Mary, full of grace, the Lord is with thee',
-    'Blessed art thou amongst women, and blessed is the fruit of thy womb, Jesus',
-    'Holy Mary, Mother of God, pray for us sinners',
-    'now and at the hour of our death Amen'
+    'Hail Mary, full of grace, the Lord is with thee, Blessed art thou amongst women, and blessed is the fruit of thy womb, Jesus Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death Amen',
+    'Hail Mary, full of grace, the Lord is with thee, Blessed art thou amongst women, and blessed is the fruit of thy womb, Jesus Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death Amen',
   ] },
   { name: 'Glory Be', sections: [
-    'Glory be to the Father, and to the Son, and to the Holy Spirit',
-    'As it was in the beginning, is now, and ever shall be, world without end Amen'
+    'Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end Amen'
   ] }
 ];
 
 const maryPostPrayersEn = [
   {name: 'Hail Holy Queen', sections:[
-    'Hail, holy Queen, Mother of mercy, our life, our sweetness, and our hope',
-    'To thee do we cry, poor banished children of Eve. To thee do we send up our sighs',
-    'mourning and weeping in this valley of tears',
-    'Turn then, most gracious advocate, thine eyes of mercy toward us',
-    'and after this our exile, show unto us the blessed fruit of thy womb, Jesus',
-    'O clement, O loving, O sweet Virgin Mary! Pray for us, O holy Mother of God',
-    'that we may be made worthy of the promises of Christ. Amen'
+    'Hail, holy Queen, Mother of mercy, our life, our sweetness, and our hope To thee do we cry, poor banished children of Eve. To thee do we send up our sighs mourning and weeping in this valley of tears Turn then, most gracious advocate, thine eyes of mercy toward us',
+    'and after this our exile, show unto us the blessed fruit of thy womb, Jesus O clement, O loving, O sweet Virgin Mary! Pray for us, O holy Mother of God that we may be made worthy of the promises of Christ. Amen'
   ]}
 ];
 
-// Prayer sets for multiple prayer pages
-const prayerSets = [
-  {
-    id: 'holy-spirit',
-    title: 'مسبحة الروح القدس',
-    titleEn: 'Holy Spirit Rosary',
-    beadsPerHouse: 8,
-    prePrayers: prePrayers,
-    houseInfo: houseInfo,
-    postPrayers: postPrayers,
-    prePrayersEn: prePrayersEn,
-    houseInfoEn: houseInfoEn,
-    postPrayersEn: postPrayersEn
-  },
-  {
-    id: 'mary',
-    title: 'مسبحة مريم',
-    titleEn: 'Mary Rosary',
-    beadsPerHouse: 12,
-    prePrayers: maryPrePrayers,
-    houseInfo: maryMysterySets.joyful,
-    postPrayers: maryPostPrayers,
-    prePrayersEn: maryPrePrayersEn,
-    houseInfoEn: maryMysterySetsEn.joyful,
-    postPrayersEn: maryPostPrayersEn
-  }
-];
+  // Prayer sets for multiple prayer pages
+  const prayerSets = [
+    {
+      id: 'holy-spirit',
+      title: 'مسبحة الروح القدس',
+      titleEn: 'Holy Spirit Rosary',
+      beadsPerHouse: 8,
+      prePrayers: prePrayers,
+      houseInfo: houseInfo,
+      postPrayers: postPrayers,
+      prePrayersEn: prePrayersEn,
+      houseInfoEn: houseInfoEn,
+      postPrayersEn: postPrayersEn
+    },
+    {
+      id: 'mary',
+      title: 'مسبحة مريم',
+      titleEn: 'Mary Rosary',
+      beadsPerHouse: 12,
+      prePrayers: maryPrePrayers,
+      houseInfo: maryMysterySets.joyful,
+      postPrayers: maryPostPrayers,
+      prePrayersEn: maryPrePrayersEn,
+      houseInfoEn: maryMysterySetsEn.joyful,
+      postPrayersEn: maryPostPrayersEn
+    }
+  ];

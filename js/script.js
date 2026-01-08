@@ -3,6 +3,7 @@ let currentPrayerSet = prayerSets[0]; // Default to Holy Spirit
 let index = 0;
 let preIndex = 0, preSection = 0;
 let postIndex = 0, postSection = 0;
+let superSection = 0; // For mystery super sections
 let flameStyle = 'classic';
 const DEBUG_FLAME_POS = false;
 let lastNavTime = 0;
@@ -131,27 +132,29 @@ function update() {
       beadsGroup.appendChild(ember);
     }
 
-    if(withinHouse === 0) {
-      if(currentPrayerSet.id === 'holy-spirit') {
+    if(currentPrayerSet.id === 'holy-spirit') {
+      if(withinHouse === 0) {
         if(isEn) prayer.innerHTML = `✦ Gift of ${houseArr[houseIndex].name}<br>${houseArr[houseIndex].super}`;
         else prayer.innerHTML = `✦ موهبة ${houseArr[houseIndex].name}<br>${houseArr[houseIndex].super}`;
-      } else { // mary
-        if(isEn) prayer.innerHTML = `✦ ${houseArr[houseIndex].name}<br>${houseArr[houseIndex].super}`;
-        else prayer.innerHTML = `✦ ${houseArr[houseIndex].name}<br>${houseArr[houseIndex].super}`;
-      }
-    } else if(withinHouse === beadsPerHouse -1){
-      if(currentPrayerSet.id === 'holy-spirit') {
+      } else if(withinHouse === beadsPerHouse -1){
         if(isEn) prayer.innerHTML = 'Come, Holy Spirit, and fill the hearts of the faithful. Glory to the eternal Father, the only-begotten Son, and the living Spirit, now and forever. Amen';
         else prayer.innerHTML = 'أرسل روحك فيُخلقوا، ويتجدد وجه الأرض. المجد للآب الأزلي، والابن الوحيد الفادي، والروح الحي المعزي الآن وإلى الأبد آمين.';
-      } else { // mary
-        if(isEn) prayer.innerHTML = 'Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen.<br><br>O my Jesus, forgive us our sins, save us from the fires of hell, lead all souls to Heaven, especially those most in need of Thy mercy.';
-        else prayer.innerHTML = 'المجد للآب والابن والروح القدس. كما كان في البدء والآن وكل أوان والى الأبد. آمين.<br><br>يا يسوع اغفر لنا خطايانا. نجنا من نار جهنم. أدخل جميع الأنفس الى الجنة. خاصة الذين هم في أشد الحاجة الى رحمتك.';
-      }
-    } else {
-      if(currentPrayerSet.id === 'holy-spirit') {
+      } else {
         if(isEn) prayer.textContent = 'Come, Holy Spirit, and renew the face of the earth';
         else prayer.textContent = 'أرسل روحك فيُخلقوا، ويتجدد وجه الأرض.';
-      } else { // mary
+      }
+    } else { // mary
+      if(withinHouse === 0) {
+        // Show mystery name and Our Father sections
+        const superText = Array.isArray(houseArr[houseIndex].super) ? houseArr[houseIndex].super[superSection] : houseArr[houseIndex].super;
+        if(isEn) prayer.innerHTML = `✦ ${houseArr[houseIndex].name}<br>${superText}`;
+        else prayer.innerHTML = `✦ ${houseArr[houseIndex].name}<br>${superText}`;
+      } else if(withinHouse === beadsPerHouse -1){
+        // Glory Be and Fatima
+        if(isEn) prayer.innerHTML = 'Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen.<br>O my Jesus, forgive us our sins, save us from the fires of hell, lead all souls to Heaven, especially those most in need of Thy mercy.';
+        else prayer.innerHTML = 'المجد للآب والابن والروح القدس. كما كان في البدء والآن وكل أوان والى الأبد. آمين.<br><br>يا يسوع اغفر لنا خطايانا. نجنا من نار جهنم. أدخل جميع الأنفس الى الجنة. خاصة الذين هم في أشد الحاجة الى رحمتك.';
+      } else {
+        // Hail Mary
         if(isEn) prayer.textContent = 'Hail Mary, full of grace, the Lord is with thee. Blessed art thou amongst women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.';
         else prayer.textContent = 'السلام عليك يا مريم ملأنة نعمة الرب معك. مباركة أنت في النساء ومبارك ثمرة بطنك يسوع. يا قديسة مريم يا أم الله صلي لأجلنا نحن الخطأة الآن وفي ساعة موتنا. آمين.';
       }
@@ -186,6 +189,7 @@ function next(){
   const sel = document.getElementById('langSelect');
   const isEn = sel && sel.value === 'en';
   const preArr = isEn ? currentPrayerSet.prePrayersEn : currentPrayerSet.prePrayers;
+  const houseArr = isEn ? currentPrayerSet.houseInfoEn : currentPrayerSet.houseInfo;
   const postArr = isEn ? currentPrayerSet.postPrayersEn : currentPrayerSet.postPrayers;
 
   if(index < preArr.length){
@@ -198,7 +202,17 @@ function next(){
     }
   }
   else if(index >= preArr.length && index < preArr.length + totalBeads){
-    index++;
+    const beadIndex = index - preArr.length;
+    const houseIndex = Math.floor(beadIndex / beadsPerHouse);
+    const withinHouse = beadIndex % beadsPerHouse;
+
+    // Check if we're on the first bead of a Mary mystery and have super sections
+    if(currentPrayerSet.id === 'mary' && withinHouse === 0 && Array.isArray(houseArr[houseIndex].super) && superSection < houseArr[houseIndex].super.length - 1){
+      superSection++;
+    } else {
+      index++;
+      superSection = 0; // Reset super section when moving to next bead
+    }
   }
   else if(index >= preArr.length + totalBeads){
     const postStep = postArr[postIndex];
@@ -221,6 +235,7 @@ function prev(){
   const sel = document.getElementById('langSelect');
   const isEn = sel && sel.value === 'en';
   const preArr = isEn ? currentPrayerSet.prePrayersEn : currentPrayerSet.prePrayers;
+  const houseArr = isEn ? currentPrayerSet.houseInfoEn : currentPrayerSet.houseInfo;
   const postArr = isEn ? currentPrayerSet.postPrayersEn : currentPrayerSet.postPrayers;
 
   if(index >= preArr.length + totalBeads){
@@ -241,13 +256,23 @@ function prev(){
     }
   }
   else if(index >= preArr.length){
-    if(index == preArr.length){
-      // Going back from first bead to last pre section
-      index = preArr.length - 1;
-      preIndex = preArr.length - 1;
-      preSection = preArr[preIndex].sections.length - 1;
+    const beadIndex = index - preArr.length;
+    const houseIndex = Math.floor(beadIndex / beadsPerHouse);
+    const withinHouse = beadIndex % beadsPerHouse;
+
+    // Check if we're on the first bead of a Mary mystery and have super sections
+    if(currentPrayerSet.id === 'mary' && withinHouse === 0 && Array.isArray(houseArr[houseIndex].super) && superSection > 0){
+      superSection--;
     } else {
-      index--;
+      if(index == preArr.length){
+        // Going back from first bead to last pre section
+        index = preArr.length - 1;
+        preIndex = preArr.length - 1;
+        preSection = preArr[preIndex].sections.length - 1;
+      } else {
+        index--;
+      }
+      superSection = 0; // Reset super section when moving to previous bead
     }
   }
   else if(index == 0 && preSection > 0){
