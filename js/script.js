@@ -5,6 +5,8 @@ let preIndex = 0, preSection = 0;
 let postIndex = 0, postSection = 0;
 let flameStyle = 'classic';
 const DEBUG_FLAME_POS = false;
+let lastNavTime = 0;
+const NAV_DEBOUNCE = 200; // 200ms debounce
 
 const beadsPerHouse = 8;
 let totalBeads = currentPrayerSet.houseInfo.length * beadsPerHouse;
@@ -157,6 +159,10 @@ function update() {
 
 // Navigation functions
 function next(){
+  const now = Date.now();
+  if(now - lastNavTime < NAV_DEBOUNCE) return;
+  lastNavTime = now;
+
   const sel = document.getElementById('langSelect');
   const isEn = sel && sel.value === 'en';
   const preArr = isEn ? currentPrayerSet.prePrayersEn : currentPrayerSet.prePrayers;
@@ -188,6 +194,10 @@ function next(){
 }
 
 function prev(){
+  const now = Date.now();
+  if(now - lastNavTime < NAV_DEBOUNCE) return;
+  lastNavTime = now;
+
   const sel = document.getElementById('langSelect');
   const isEn = sel && sel.value === 'en';
   const preArr = isEn ? currentPrayerSet.prePrayersEn : currentPrayerSet.prePrayers;
@@ -234,9 +244,9 @@ function prev(){
   update();
 }
 
-// Event listeners
-document.querySelector('.zone.right').onclick = next;
-document.querySelector('.zone.left').onclick = prev;
+// Event listeners - disable zone clicks to prevent interference with nav buttons
+// document.querySelector('.zone.right').onclick = next;
+// document.querySelector('.zone.left').onclick = prev;
 document.querySelector('.nav.right').onclick = next;
 document.querySelector('.nav.left').onclick = prev;
 
