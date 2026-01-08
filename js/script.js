@@ -8,7 +8,7 @@ const DEBUG_FLAME_POS = false;
 let lastNavTime = 0;
 const NAV_DEBOUNCE = 200; // 200ms debounce
 
-const beadsPerHouse = 8;
+let beadsPerHouse = 8;
 let totalBeads = currentPrayerSet.houseInfo.length * beadsPerHouse;
 
 const beadsGroup = document.getElementById('beads');
@@ -34,7 +34,7 @@ function createBeads() {
     bead.setAttribute('cy', y);
     bead.setAttribute('r', (i % beadsPerHouse === 0) ? 17 : 12);
     bead.classList.add('bead');
-    if(i % beadsPerHouse === 0) bead.classList.add('super');
+    if(i % beadsPerHouse === 0 || (i % beadsPerHouse === beadsPerHouse - 1)) bead.classList.add('super');
     else bead.classList.add('small');
 
     beadsGroup.appendChild(bead);
@@ -132,18 +132,38 @@ function update() {
     }
 
     if(withinHouse === 0) {
-      if(isEn) prayer.innerHTML = `✦ Gift of ${houseArr[houseIndex].name}<br>${houseArr[houseIndex].super}`;
-      else prayer.innerHTML = `✦ موهبة ${houseArr[houseIndex].name}<br>${houseArr[houseIndex].super}`;
-    } else if(withinHouse === 7){
-      if(isEn) prayer.innerHTML = 'Come, Holy Spirit, and fill the hearts of the faithful. Glory to the eternal Father, the only-begotten Son, and the living Spirit, now and forever. Amen';
-      else prayer.innerHTML = 'أرسل روحك فيُخلقوا، ويتجدد وجه الأرض. المجد للآب الأزلي، والابن الوحيد الفادي، والروح الحي المعزي الآن وإلى الأبد آمين.';
+      if(currentPrayerSet.id === 'holy-spirit') {
+        if(isEn) prayer.innerHTML = `✦ Gift of ${houseArr[houseIndex].name}<br>${houseArr[houseIndex].super}`;
+        else prayer.innerHTML = `✦ موهبة ${houseArr[houseIndex].name}<br>${houseArr[houseIndex].super}`;
+      } else { // mary
+        if(isEn) prayer.innerHTML = `✦ ${houseArr[houseIndex].name}<br>${houseArr[houseIndex].super}`;
+        else prayer.innerHTML = `✦ ${houseArr[houseIndex].name}<br>${houseArr[houseIndex].super}`;
+      }
+    } else if(withinHouse === beadsPerHouse -1){
+      if(currentPrayerSet.id === 'holy-spirit') {
+        if(isEn) prayer.innerHTML = 'Come, Holy Spirit, and fill the hearts of the faithful. Glory to the eternal Father, the only-begotten Son, and the living Spirit, now and forever. Amen';
+        else prayer.innerHTML = 'أرسل روحك فيُخلقوا، ويتجدد وجه الأرض. المجد للآب الأزلي، والابن الوحيد الفادي، والروح الحي المعزي الآن وإلى الأبد آمين.';
+      } else { // mary
+        if(isEn) prayer.innerHTML = 'Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen.<br><br>O my Jesus, forgive us our sins, save us from the fires of hell, lead all souls to Heaven, especially those most in need of Thy mercy.';
+        else prayer.innerHTML = 'المجد للآب والابن والروح القدس. كما كان في البدء والآن وكل أوان والى الأبد. آمين.<br><br>يا يسوع اغفر لنا خطايانا. نجنا من نار جهنم. أدخل جميع الأنفس الى الجنة. خاصة الذين هم في أشد الحاجة الى رحمتك.';
+      }
     } else {
-      if(isEn) prayer.textContent = 'Come, Holy Spirit, and renew the face of the earth';
-      else prayer.textContent = 'أرسل روحك فيُخلقوا، ويتجدد وجه الأرض.';
+      if(currentPrayerSet.id === 'holy-spirit') {
+        if(isEn) prayer.textContent = 'Come, Holy Spirit, and renew the face of the earth';
+        else prayer.textContent = 'أرسل روحك فيُخلقوا، ويتجدد وجه الأرض.';
+      } else { // mary
+        if(isEn) prayer.textContent = 'Hail Mary, full of grace, the Lord is with thee. Blessed art thou amongst women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.';
+        else prayer.textContent = 'السلام عليك يا مريم ملأنة نعمة الرب معك. مباركة أنت في النساء ومبارك ثمرة بطنك يسوع. يا قديسة مريم يا أم الله صلي لأجلنا نحن الخطأة الآن وفي ساعة موتنا. آمين.';
+      }
     }
 
-    if(isEn) counter.textContent = `Gift ${houseIndex+1} of ${houseArr.length} • Bead ${withinHouse+1} of ${beadsPerHouse}`;
-    else counter.textContent = `موهبة ${houseIndex+1} / ${houseArr.length} • حبة ${withinHouse+1} / ${beadsPerHouse}`;
+    if(currentPrayerSet.id === 'holy-spirit') {
+      if(isEn) counter.textContent = `Gift ${houseIndex+1} of ${houseArr.length} • Bead ${withinHouse+1} of ${beadsPerHouse}`;
+      else counter.textContent = `موهبة ${houseIndex+1} / ${houseArr.length} • حبة ${withinHouse+1} / ${beadsPerHouse}`;
+    } else { // mary
+      if(isEn) counter.textContent = `Mystery ${houseIndex+1} of ${houseArr.length} • Bead ${withinHouse+1} of ${beadsPerHouse}`;
+      else counter.textContent = `سر ${houseIndex+1} / ${houseArr.length} • حبة ${withinHouse+1} / ${beadsPerHouse}`;
+    }
   }
   else{
     const postStep = postArr[postIndex];
@@ -280,6 +300,40 @@ function initUI() {
   `;
   document.body.appendChild(langDiv);
 
+  // Mystery selection popup (for Mary Rosary)
+  const mysteryPopup = document.createElement('div');
+  mysteryPopup.className = 'mystery-popup';
+  mysteryPopup.id = 'mysteryPopup';
+  mysteryPopup.innerHTML = `
+    <div class="mystery-popup-content">
+      <h3>اختر مجموعة الأسرار / Select Mystery Set</h3>
+      <select id="mysterySelect" aria-label="Mystery set selector">
+        <option value="joyful">الأسرار الفرحة / Joyful Mysteries</option>
+        <option value="sorrowful">الأسرار الأليمة / Sorrowful Mysteries</option>
+        <option value="glorious">الأسرار المجيدة / Glorious Mysteries</option>
+        <option value="luminous">الأسرار النورية / Luminous Mysteries</option>
+      </select>
+      <button id="mysteryOkBtn">موافق / OK</button>
+    </div>
+  `;
+  document.body.appendChild(mysteryPopup);
+
+  const mysterySelect = document.getElementById('mysterySelect');
+  const mysteryOkBtn = document.getElementById('mysteryOkBtn');
+
+  mysteryOkBtn.addEventListener('click', () => {
+    const selected = mysterySelect.value;
+    console.log('Mystery selected:', selected);
+    if(currentPrayerSet.id === 'mary') {
+      currentPrayerSet.houseInfo = maryMysterySets[selected];
+      currentPrayerSet.houseInfoEn = maryMysterySetsEn[selected];
+      totalBeads = currentPrayerSet.houseInfo.length * beadsPerHouse;
+      createBeads();
+      update();
+    }
+    mysteryPopup.style.display = 'none';
+  });
+
   const select = document.getElementById('langSelect');
   select.addEventListener('change', e=> {
     // When language changes, ensure indices are within bounds for the new language arrays
@@ -349,20 +403,33 @@ function switchPrayer(setId) {
   const newSet = prayerSets.find(s => s.id === setId);
   if(newSet) {
     currentPrayerSet = newSet;
+    beadsPerHouse = newSet.beadsPerHouse || 8;
+    // Update the center image based on prayer set
+    const doveImg = document.getElementById('dove');
+    if(setId === 'holy-spirit') {
+      doveImg.setAttribute('href', 'holy-spirit-pixelized.jpg');
+    } else if(setId === 'mary') {
+      doveImg.setAttribute('href', 'holy-mary-pixelized.webp');
+    }
     // Reset indices
     index = 0;
     preIndex = 0;
     preSection = 0;
     postIndex = 0;
     postSection = 0;
-    // Recreate beads if different count
-    const newTotal = newSet.houseInfo.length * beadsPerHouse;
-    if(newTotal !== totalBeads) {
-      totalBeads = newTotal;
+    // Handle mystery set for Mary
+    if(setId === 'mary') {
+      // Close menu first, then show mystery selection popup
+      toggleMenu(); // Close the burger menu
+      document.getElementById('mysteryPopup').style.display = 'flex';
+      document.getElementById('mysterySelect').value = 'joyful'; // Default to joyful
+    } else {
+      // For other prayer sets, proceed normally
+      totalBeads = currentPrayerSet.houseInfo.length * beadsPerHouse;
       createBeads();
+      update();
+      toggleMenu(); // Close menu
     }
-    update();
-    toggleMenu(); // Close menu
   }
 }
 
@@ -372,3 +439,4 @@ document.addEventListener('DOMContentLoaded', () => {
   initUI();
   update();
 });// Initialize
+  update();
