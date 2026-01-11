@@ -145,11 +145,45 @@ function update() {
       }
     } else { // mary
       if(withinHouse === 0) {
-        // Show mystery name and Our Father sections
-        const superText = Array.isArray(houseArr[houseIndex].super) ? houseArr[houseIndex].super[superSection] : houseArr[houseIndex].super;
-        if(isEn) prayer.innerHTML = `✦ ${houseArr[houseIndex].name}<br>${superText}`;
-        else prayer.innerHTML = `✦ ${houseArr[houseIndex].name}<br>${superText}`;
-      } else if(withinHouse === beadsPerHouse -1){
+        // Super bead: cycle through mystery content in pages (max 32 words per section)
+        const mystery = houseArr[houseIndex];
+
+        // Calculate total sections to cycle through
+        let totalSections = 1; // name + fruit combined
+        const meditationSections = Array.isArray(mystery.meditation) ? mystery.meditation : [mystery.meditation];
+        totalSections += meditationSections.length; // meditation sections
+        const ourFatherSections = Array.isArray(mystery.super) ? mystery.super : [mystery.super];
+        totalSections += ourFatherSections.length; // our father sections
+
+        // Cycle through content sections with mystery name only on first page
+        let content = '';
+
+        if (superSection === 0) {
+          // Page 1: Mystery Name + Fruit
+          content = `<h3>${mystery.name}</h3>`;
+          if(isEn) content += `<h4>Fruit: ${mystery.fruit}</h4>`;
+          else content += `<h4>الثمرة: ${mystery.fruit}</h4>`;
+        } else {
+          // Pages 2+: Meditation and Our Father sections
+          const contentIndex = superSection - 1;
+          if (contentIndex < meditationSections.length) {
+            // Meditation section
+            const meditationText = meditationSections[contentIndex];
+            if(isEn) content = `<h4>Meditation</h4><p>${meditationText}</p>`;
+            else content = `<h4>التأمل</h4><p>${meditationText}</p>`;
+          } else {
+            // Our Father section
+            const fatherIndex = contentIndex - meditationSections.length;
+            if (fatherIndex < ourFatherSections.length) {
+              const fatherText = ourFatherSections[fatherIndex];
+              if(isEn) content += `<h4>Our Father</h4><p>${fatherText}</p>`;
+              else content += `<p>${fatherText}</p>`;
+            }
+          }
+        }
+
+        prayer.innerHTML = content;
+      } else if(withinHouse === beadsPerHouse - 1){
         // Glory Be and Fatima
         if(isEn) prayer.innerHTML = 'Glory be to the Father, and to the Son, and to the Holy Spirit. As it was in the beginning, is now, and ever shall be, world without end. Amen.<br>O my Jesus, forgive us our sins, save us from the fires of hell, lead all souls to Heaven, especially those most in need of Thy mercy.';
         else prayer.innerHTML = 'المجد للآب والابن والروح القدس. كما كان في البدء والآن وكل أوان والى الأبد. آمين.<br><br>يا يسوع اغفر لنا خطايانا. نجنا من نار جهنم. أدخل جميع الأنفس الى الجنة. خاصة الذين هم في أشد الحاجة الى رحمتك.';
@@ -206,12 +240,23 @@ function next(){
     const houseIndex = Math.floor(beadIndex / beadsPerHouse);
     const withinHouse = beadIndex % beadsPerHouse;
 
-    // Check if we're on the first bead of a Mary mystery and have super sections
-    if(currentPrayerSet.id === 'mary' && withinHouse === 0 && Array.isArray(houseArr[houseIndex].super) && superSection < houseArr[houseIndex].super.length - 1){
-      superSection++;
+    // Check if we're on a Mary super bead and have sections to cycle through
+    if(currentPrayerSet.id === 'mary' && withinHouse === 0) {
+      const mystery = houseArr[houseIndex];
+      let totalSections = 1; // name + fruit combined
+      const meditationSections = Array.isArray(mystery.meditation) ? mystery.meditation : [mystery.meditation];
+      totalSections += meditationSections.length;
+      const ourFatherSections = Array.isArray(mystery.super) ? mystery.super : [mystery.super];
+      totalSections += ourFatherSections.length;
+
+      if (superSection < totalSections - 1) {
+        superSection++;
+      } else {
+        index++;
+        superSection = 0;
+      }
     } else {
       index++;
-      superSection = 0; // Reset super section when moving to next bead
     }
   }
   else if(index >= preArr.length + totalBeads){
@@ -260,8 +305,8 @@ function prev(){
     const houseIndex = Math.floor(beadIndex / beadsPerHouse);
     const withinHouse = beadIndex % beadsPerHouse;
 
-    // Check if we're on the first bead of a Mary mystery and have super sections
-    if(currentPrayerSet.id === 'mary' && withinHouse === 0 && Array.isArray(houseArr[houseIndex].super) && superSection > 0){
+    // Check if we're on a Mary super bead and have sections to go back to
+    if(currentPrayerSet.id === 'mary' && withinHouse === 0 && superSection > 0){
       superSection--;
     } else {
       if(index == preArr.length){
@@ -350,8 +395,11 @@ function initUI() {
     const selected = mysterySelect.value;
     console.log('Mystery selected:', selected);
     if(currentPrayerSet.id === 'mary') {
-      currentPrayerSet.houseInfo = maryMysterySets[selected];
-      currentPrayerSet.houseInfoEn = maryMysterySetsEn[selected];
+      currentPrayerSet.houseInfo = maryMysterySets[selected].mysteries;
+      currentPrayerSet.houseInfoEn = maryMysterySetsEn[selected].mysteries;
+      // Set dynamic offering from the selected mystery set
+      currentPrayerSet.prePrayers[3].sections[0] = maryMysterySets[selected].offering;
+      currentPrayerSet.prePrayersEn[3].sections[0] = maryMysterySetsEn[selected].offering;
       totalBeads = currentPrayerSet.houseInfo.length * beadsPerHouse;
       createBeads();
       update();
